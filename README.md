@@ -7,6 +7,7 @@ INPUTS
 - Window (how far back do you need data for the model)
 - R_Frequency (how often do you rebalance)
 - R_Date (what day do you rebalance on)
+- Holding Period (how long you hold portfolios for)
 
 OUPUT
 - Vector of daily returns (compounded)
