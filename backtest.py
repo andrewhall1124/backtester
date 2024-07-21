@@ -7,15 +7,15 @@ import yfinance as yf
 import os
 from tabulate import tabulate
 
-# Parameters
+TRADING_DAYS = 250
 
-# Data Acquisition
-start = '2021-01-01'
+# Data Acquisition Params
+start = '2016-01-01'
 end = '2023-12-31'
 bmk_ticker = "SPY"
 
-# Portfolio Composition
-num_positions = 5
+# Portfolio Composition Params
+num_positions = 300
 rebalance_frequency = "?"
 holding_period = "?"
 
@@ -55,6 +55,8 @@ monthly['logret'] = np.log(1+monthly['ret'])
 
 monthly['mom'] = monthly.groupby('symbol')['logret'].rolling(11,11).sum().reset_index(drop=True)
 
+monthly['mom'] = monthly.groupby('symbol')['mom'].shift(1)
+
 monthly['momlag'] = monthly.groupby('symbol')['mom'].shift(1)
 
 # Trading filters
@@ -84,6 +86,10 @@ test = test.sort_values(by='caldt').reset_index(drop=True)
 test['cumret'] = (1+test['ret']).cumprod() - 1
 
 # Load benchmark daily data
+
+bmk = yf.download(bmk_ticker, start=start, end=end)
+
+bmk.to_csv('bmk.csv')
 
 bmk = pd.read_csv('bmk.csv',index_col=False)
 
@@ -125,14 +131,17 @@ plt.savefig('chart.png')
 port_cumret = test['cumret'].iloc[-1] 
 bmk_cumret = bmk['cumret'].iloc[-1]
 
-port_ret = port_cumret / test['cumret'].count() * 250
-bmk_ret = bmk_cumret / bmk['cumret'].count() * 250
+port_ret = port_cumret / test['cumret'].count() * TRADING_DAYS
+bmk_ret = bmk_cumret / bmk['cumret'].count() * TRADING_DAYS
 
 port_vol = test['ret'].std()
 bmk_vol = bmk['ret'].std()
 
 port_er = test['ret'].mean()
 bmk_er = bmk['ret'].mean()
+
+port_sharpe = port_er / port_vol * (TRADING_DAYS/np.sqrt(TRADING_DAYS))
+bmk_sharpe = bmk_er / bmk_vol * (TRADING_DAYS/np.sqrt(TRADING_DAYS))
 
 correlation = test['ret'].corr(bmk['ret'])
 covariance = test['ret'].cov(bmk['ret'])
@@ -147,7 +156,7 @@ table = [
     ["Annual Return", f"% {round(port_ret * 100, 2)}", f"% {round(bmk_ret * 100, 2)}"],
     ["Expected Return", f"% {round(port_er * 100,2)}", f"% {round(bmk_er * 100,2)}"],
     ["Volatility", f"% {round(port_vol * 100,2)}", f"% {round(bmk_vol * 100,2)}"],
-    ["Sharpe", f"{round((port_er / port_vol * 100),2)}", f"{round((bmk_er / bmk_vol * 100),2)}"],
+    ["Sharpe", f"{round((port_sharpe),2)}", f"{round((bmk_sharpe),2)}"],
     ["Correlation", round(correlation,2)],
     ["Beta", round(beta,2)]
 ]
