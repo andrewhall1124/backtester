@@ -1,35 +1,31 @@
-import pandas as pd
+# import pandas as pd
+import cudf as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from tabulate import tabulate
+
+TRADING_DAYS = 250
 
 class Performance:
-    def __init__(self, returns: pd.Series):
-        self.returns = returns
+    
+    def __init__(self, backtest_data: pd.DataFrame, benchmark_data: pd.DataFrame):
+        self.test = backtest_data
+        self.bmk = benchmark_data
 
-        # Transformations
+        start = self.test['caldt'].min()
+        end = self.test['caldt'].max()
 
-        bmk['Date'] = pd.to_datetime(bmk['Date'])
+        self.bmk = self.bmk[(self.bmk['caldt'] >= start) & (self.bmk['caldt'] <= end)].reset_index(drop=True)
 
-        bmk['caldt'] = bmk['Date'].dt.strftime("%Y-%m-%d")
-        bmk['mdt'] = bmk['Date'].dt.strftime("%Y-%m")
-
-        bmk = bmk.rename(columns={'Adj Close': 'close'})
-
-        bmk = bmk[['caldt','mdt','close']]
-
-        bmk = bmk[bmk['caldt'] >= returns['caldt'].min()]
-
-        bmk['ret'] = bmk['close'].pct_change()
-        bmk['cumret'] = (1+bmk['ret']).cumprod() - 1
-
-        bmk = bmk.drop(columns=['close', 'mdt'])
-
-        bmk = bmk.reset_index(drop = True)
-
-    def result(self):
-
+        self.test['cumret'] = (1+self.test['ret']).cumprod() - 1
+        self.bmk['cumret'] = (1+self.bmk['ret']).cumprod() - 1
+    
+    def chart(self):
+        test = self.test
+        bmk = self.bmk
 
         # Chart
-
         test['caldt'] = pd.to_datetime(test['caldt'])
         bmk['caldt'] = pd.to_datetime(bmk['caldt'])
 
@@ -40,8 +36,10 @@ class Performance:
         sns.lineplot(data=bmk,x='caldt',y='cumret', label='Benchmark')
 
         plt.savefig('chart.png')
-
-        # Metrics
+    
+    def table(self):
+        test = self.test
+        bmk = self.bmk
 
         port_cumret = test['cumret'].iloc[-1] 
         bmk_cumret = bmk['cumret'].iloc[-1]
@@ -79,3 +77,36 @@ class Performance:
         # Print the table
 
         print(tabulate(table, headers="firstrow", tablefmt="grid"))
+
+    def portfolio_metrics(self):
+        test = self.test
+        bmk = self.bmk
+
+        port_cumret = test['cumret'].iloc[-1] 
+
+        port_ret = port_cumret / test['cumret'].count() * TRADING_DAYS
+
+        port_vol = test['ret'].std()
+        bmk_vol = bmk['ret'].std()
+
+        port_er = test['ret'].mean()
+
+        port_sharpe = port_er / port_vol * (TRADING_DAYS/np.sqrt(TRADING_DAYS))
+
+        correlation = test['ret'].corr(bmk['ret'])
+        covariance = test['ret'].cov(bmk['ret'])
+
+        beta = covariance / (bmk_vol**2)
+
+        result = {
+            'Total Return': port_cumret,
+            'Annual Return': port_ret,
+            'Volatility': port_vol,
+            'Expected Return': port_er,
+            'Sharpe': port_sharpe,
+            'Correlation': correlation,
+            'Beta': beta
+        }
+
+        return result
+

@@ -2,6 +2,7 @@
 import cudf as pd
 import numpy as np
 from backtest import Backtest
+from performance import Performance
 from models.momentum_model import momentum_model
 
 def _historical_data():
@@ -26,7 +27,32 @@ def _historical_data():
 
     return df
 
+def _benchmark_data():
+    # Load benchmark daily data
+    bmk = pd.read_csv('data/bmk.csv',index_col=False)
+
+    # Transformations
+
+    bmk['Date'] = pd.to_datetime(bmk['Date'])
+
+    bmk['caldt'] = bmk['Date'].dt.strftime("%Y-%m-%d")
+    bmk['mdt'] = bmk['Date'].dt.strftime("%Y-%m")
+
+    bmk = bmk.rename(columns={'Adj Close': 'close'})
+
+    bmk = bmk[['caldt','mdt','close']]
+
+    bmk['ret'] = bmk['close'].pct_change()
+
+    bmk = bmk.drop(columns=['close', 'mdt'])
+
+    bmk = bmk.reset_index(drop = True)
+
+    return bmk
+
 historical_data = _historical_data()
+benchmark_data = _benchmark_data()
+
 parameters = {
     'num_positions': 10
 }
@@ -36,6 +62,8 @@ end = '2023-12-31'
 
 backtest = Backtest(historical_data, momentum_model, parameters)
 
-result = backtest.test(start,end)
+returns = backtest.test(start,end)
 
-print(result)
+performance = Performance(returns, benchmark_data)
+
+print(performance.portfolio_metrics())
