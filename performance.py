@@ -3,6 +3,7 @@ import cudf as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import statsmodels.api as sm
 from tabulate import tabulate
 
 TRADING_DAYS = 250
@@ -58,8 +59,14 @@ class Performance:
 
         correlation = test['ret'].corr(bmk['ret'])
         covariance = test['ret'].cov(bmk['ret'])
+        
+        x = bmk['ret'].to_numpy()
+        y = test['ret'].to_numpy()
 
-        beta = covariance / (bmk_vol**2)
+        x = sm.add_constant(x)
+        model = sm.OLS(y,x).fit()
+
+        intercept, slope = model.params
 
         # Create a table with the results
 
@@ -71,7 +78,8 @@ class Performance:
             ["Volatility", f"% {round(port_vol * 100,2)}", f"% {round(bmk_vol * 100,2)}"],
             ["Sharpe", f"{round((port_sharpe),2)}", f"{round((bmk_sharpe),2)}"],
             ["Correlation", round(correlation,2)],
-            ["Beta", round(beta,2)]
+            ["Beta", round(slope,2)],
+            ["Alpha", round(intercept, 2)]
         ]
 
         # Print the table
@@ -96,7 +104,13 @@ class Performance:
         correlation = test['ret'].corr(bmk['ret'])
         covariance = test['ret'].cov(bmk['ret'])
 
-        beta = covariance / (bmk_vol**2)
+        x = bmk['ret'].to_numpy()
+        y = test['ret'].to_numpy()
+
+        x = sm.add_constant(x)
+        model = sm.OLS(y,x).fit()
+
+        intercept, slope = model.params
 
         result = {
             'Total Return': port_cumret,
@@ -105,7 +119,8 @@ class Performance:
             'Expected Return': port_er,
             'Sharpe': port_sharpe,
             'Correlation': correlation,
-            'Beta': beta
+            'Beta': slope,
+            'Alpha': intercept
         }
 
         return result
