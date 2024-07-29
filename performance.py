@@ -79,7 +79,7 @@ class Performance:
             ["Sharpe", f"{round((port_sharpe),2)}", f"{round((bmk_sharpe),2)}"],
             ["Correlation", round(correlation,2)],
             ["Beta", round(slope,2)],
-            ["Alpha", round(intercept, 2)]
+            ["Alpha", round(intercept, 4)]
         ]
 
         # Print the table

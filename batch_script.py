@@ -53,7 +53,7 @@ def _benchmark_data():
 historical_data = _historical_data()
 benchmark_data = _benchmark_data()
 
-start = '2016-01'
+start = '2021-01'
 end = '2023-12-31'
 
 portfolio_sizes = [x+1 for x in range(100)]
