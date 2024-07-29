@@ -53,19 +53,32 @@ def _benchmark_data():
 historical_data = _historical_data()
 benchmark_data = _benchmark_data()
 
-start = '2016-01-01'
+start = '2016-01'
 end = '2023-12-31'
 
-parameters = {
-    'num_positions': 25
-}
+portfolio_sizes = [x+1 for x in range(100)]
+results = []
 
-backtest = Backtest(historical_data, momentum_model, parameters)
+for size in portfolio_sizes:
+    print(f"Computing backtest performance for portfolio with size {size}.")
+    
+    parameters = {
+        'num_positions': size
+    }
 
-backtest_data = backtest.test(start,end)
+    backtest = Backtest(historical_data, momentum_model, parameters)
 
-performance = Performance(backtest_data, benchmark_data)
+    backtest_data = backtest.test(start,end)
 
-performance.chart()
-performance.table()
+    performance = Performance(backtest_data, benchmark_data)
+
+    result = performance.portfolio_metrics()
+
+    result['Size'] = size
+
+    results.append(result)
+
+df = pd.DataFrame(results)
+df.to_csv('data/results.csv')
+
     
