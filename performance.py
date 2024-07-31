@@ -21,7 +21,7 @@ class Performance:
 
         self.test['cumret'] = (1+self.test['ret']).cumprod() - 1
         self.bmk['cumret'] = (1+self.bmk['ret']).cumprod() - 1
-    
+
     def chart(self):
         test = self.test
         bmk = self.bmk
@@ -58,7 +58,6 @@ class Performance:
         bmk_sharpe = bmk_er / bmk_vol * (TRADING_DAYS/np.sqrt(TRADING_DAYS))
 
         correlation = test['ret'].corr(bmk['ret'])
-        covariance = test['ret'].cov(bmk['ret'])
         
         x = bmk['ret'].to_numpy()
         y = test['ret'].to_numpy()
@@ -116,6 +115,9 @@ class Performance:
 
         intercept, slope = model.params
 
+        alpha = intercept * test['ret'].count()
+        annual_alpha = intercept * TRADING_DAYS
+
         result = {
             'Total Return': port_cumret,
             'Annual Return': port_ret,
@@ -124,7 +126,8 @@ class Performance:
             'Sharpe': port_sharpe,
             'Correlation': correlation,
             'Beta': slope,
-            'Alpha': intercept
+            'Alpha': alpha,
+            'Annual Alpha': annual_alpha
         }
 
         return result
