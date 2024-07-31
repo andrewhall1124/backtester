@@ -98,14 +98,12 @@ class Performance:
         port_ret = port_cumret / test['cumret'].count() * TRADING_DAYS
 
         port_vol = test['ret'].std()
-        bmk_vol = bmk['ret'].std()
 
         port_er = test['ret'].mean()
 
         port_sharpe = port_er / port_vol * (TRADING_DAYS/np.sqrt(TRADING_DAYS))
 
         correlation = test['ret'].corr(bmk['ret'])
-        covariance = test['ret'].cov(bmk['ret'])
 
         x = bmk['ret'].to_numpy()
         y = test['ret'].to_numpy()
