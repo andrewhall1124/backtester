@@ -15,8 +15,6 @@ def _historical_data():
     df['caldt'] = df['timestamp'].dt.strftime("%Y-%m-%d")
     df['mdt'] = df['timestamp'].dt.strftime("%Y-%m")
 
-    # historical_data = historical_data[(historical_data['caldt'] >= start) & (historical_data['caldt'] <= end)]
-
     df = df[['symbol','caldt','mdt','close']].copy()
 
     df = df.sort_values(by=['symbol','caldt'])

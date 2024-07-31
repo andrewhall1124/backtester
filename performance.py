@@ -68,6 +68,9 @@ class Performance:
 
         intercept, slope = model.params
 
+        alpha = intercept * test['ret'].count()
+        annual_alpha = intercept * TRADING_DAYS
+
         # Create a table with the results
 
         table = [
@@ -79,7 +82,8 @@ class Performance:
             ["Sharpe", f"{round((port_sharpe),2)}", f"{round((bmk_sharpe),2)}"],
             ["Correlation", round(correlation,2)],
             ["Beta", round(slope,2)],
-            ["Alpha", round(intercept, 4)]
+            ["Alpha", round(alpha, 2)],
+            ["Annual Alpha", round(annual_alpha, 2)]
         ]
 
         # Print the table
