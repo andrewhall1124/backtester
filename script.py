@@ -1,9 +1,11 @@
 # import pandas as pd
 import cudf as pd
-import numpy as np
+# import numpy as np
+import cupy as np
 from backtest import Backtest
 from performance import Performance
 from models.momentum_model import momentum_model
+from models.fip_model import fip_model
 
 def _historical_data():
     df = pd.read_csv('data/data.csv')
@@ -51,14 +53,14 @@ def _benchmark_data():
 historical_data = _historical_data()
 benchmark_data = _benchmark_data()
 
-start = '2021-01-01'
+start = '2000-01-01'
 end = '2023-12-31'
 
 parameters = {
     'num_positions': 20
 }
 
-backtest = Backtest(historical_data, momentum_model, parameters)
+backtest = Backtest(historical_data, fip_model, parameters)
 
 backtest_data = backtest.test(start,end)
 
