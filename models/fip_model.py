@@ -50,4 +50,6 @@ def fip_model(daily, parameters):
 
     port = monthly[monthly['score'] <= num_positions].reset_index(drop=True).copy()
 
+    print(port[port['mdt'] == port['mdt'].max()].sort_values(by='score').reset_index(drop=True))
+
     return port

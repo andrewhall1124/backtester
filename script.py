@@ -9,7 +9,6 @@ from models.fip_model import fip_model
 
 def _historical_data():
     df = pd.read_csv('data/data.csv')
-    # Transformations
 
     df['timestamp'] = df['timestamp'].astype(str).str[:10]
     df['timestamp'] = pd.to_datetime(df['timestamp'])
@@ -53,11 +52,11 @@ def _benchmark_data():
 historical_data = _historical_data()
 benchmark_data = _benchmark_data()
 
-start = '2000-01-01'
-end = '2023-12-31'
+start = '2020-01-01'
+end = '2024-08-01'
 
 parameters = {
-    'num_positions': 20
+    'num_positions': 25
 }
 
 backtest = Backtest(historical_data, fip_model, parameters)
