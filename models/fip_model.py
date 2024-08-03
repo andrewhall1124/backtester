@@ -1,6 +1,4 @@
 import cudf as pd
-# import pandas as pd
-# import cupy as np
 import numpy as np    
 
 
@@ -20,11 +18,11 @@ def fip_model(daily, parameters):
     monthly.reset_index("symbol",inplace=True)
 
     # Create additional monthly columns
-    monthly['%neg-%pos'] = (monthly['down']-daily['up']) / monthly['total']
+    monthly['%neg-%pos'] = (monthly['down']-monthly['up']) / monthly['total']
 
     monthly['ret'] = monthly.groupby('symbol')['close'].pct_change()
 
-    monthly['logret'] = np.log(1 + daily['ret'])
+    monthly['logret'] = np.log(1 + monthly['ret'])
 
 
     # Generate pret and id features
@@ -49,7 +47,5 @@ def fip_model(daily, parameters):
     monthly['score'] = monthly.groupby('mdt')['momscore'].rank(ascending=False)
 
     port = monthly[monthly['score'] <= num_positions].reset_index(drop=True).copy()
-
-    print(port[port['mdt'] == port['mdt'].max()].sort_values(by='score').reset_index(drop=True))
 
     return port
