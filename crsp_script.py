@@ -32,7 +32,6 @@ def _monthly_data():
     return df
 
 def _benchmark_data():
-    # Load benchmark daily data
     bmk = pd.read_csv('data/bmk.csv',index_col=False)
 
     bmk['Date'] = pd.to_datetime(bmk['Date'])
@@ -58,7 +57,7 @@ daily_data = _daily_data()
 monthly_data = _monthly_data()
 benchmark_data = _benchmark_data()
 
-start = '2005-01-01'
+start = '2018-01-01'
 end = '2023-12-31'
 
 parameters = {

@@ -74,15 +74,15 @@ class Performance:
 
         table = [
             ["Metric", "Portfolio", "Benchmark"],
-            ["Total Return", f"% {round(port_cumret * 100, 2)}", f"% {round(bmk_cumret * 100, 2)}" ],
-            ["Annual Return", f"% {round(port_ret * 100, 2)}", f"% {round(bmk_ret * 100, 2)}"],
-            ["Expected Return", f"% {round(port_er * 100,2)}", f"% {round(bmk_er * 100,2)}"],
-            ["Volatility", f"% {round(port_vol * 100,2)}", f"% {round(bmk_vol * 100,2)}"],
+            ["Total Return", f"{round(port_cumret * 100, 2)} %", f"{round(bmk_cumret * 100, 2)} %" ],
+            ["Annual Return", f"{round(port_ret * 100, 2)} %", f"{round(bmk_ret * 100, 2)} %"],
+            ["Expected Return", f"{round(port_er * 100,2)} %", f"{round(bmk_er * 100,2)} %"],
+            ["Volatility", f"{round(port_vol * 100,2)} %", f"{round(bmk_vol * 100,2)} %"],
             ["Sharpe", f"{round((port_sharpe),2)}", f"{round((bmk_sharpe),2)}"],
             ["Correlation", round(correlation,2)],
             ["Beta", round(slope,2)],
-            ["Alpha", round(alpha, 2)],
-            ["Annual Alpha", round(annual_alpha, 2)]
+            ["Alpha", f"{round(alpha*100, 2)} %"],
+            ["Annual Alpha", f"{round(annual_alpha*100, 2)} %"]
         ]
 
         # Print the table
